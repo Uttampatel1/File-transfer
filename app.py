@@ -381,35 +381,3 @@ with col2:
         "<p style='text-align: center; color: gray;'>🔐 Secure Multi-File Transfer App</p>",
         unsafe_allow_html=True
     )
-
-# Display active transfers (for debugging/admin purposes)
-metadata = load_file_metadata()
-if metadata:
-    with st.expander("📊 Active Transfers (Admin View)", expanded=False):
-        st.write(f"Total active transfers: {len(metadata)}")
-        
-        # Group files by upload time to show batches
-        files_by_time = {}
-        for pin, info in metadata.items():
-            time_key = info['upload_time'].strftime("%Y-%m-%d %H:%M")
-            if time_key not in files_by_time:
-                files_by_time[time_key] = []
-            files_by_time[time_key].append((pin, info))
-        
-        for time_key, files in files_by_time.items():
-            st.write(f"**Uploaded at {time_key}** ({len(files)} files)")
-            for pin, info in files:
-                col1, col2, col3, col4 = st.columns(4)
-                with col1:
-                    st.text(f"PIN: {pin}")
-                with col2:
-                    st.text(f"File: {info['filename'][:20]}{'...' if len(info['filename']) > 20 else ''}")
-                with col3:
-                    st.text(f"Size: {info['size']/1024:.1f} KB")
-                with col4:
-                    hours_left = 24 - int((datetime.now() - info['upload_time']).total_seconds() / 3600)
-                    st.text(f"Expires: {max(0, hours_left)}h")
-            st.write("")
-else:
-    with st.expander("📊 Active Transfers (Admin View)", expanded=False):
-        st.info("No active transfers currently")
